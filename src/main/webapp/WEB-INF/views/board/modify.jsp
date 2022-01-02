@@ -37,8 +37,11 @@ $(document).ready(function(){
 			<!-- /.panel-heading -->
 			<div class="panel-body">
 				<form id="hddnFrm" method="post" action="/board/modify">
-					<input type="hidden" name="pageNum" value="${cri.pageNum }">
-					<input type="hidden" name="amount" 	value="${cri.amount }">
+					<input type="hidden" id="pageNum" 		name="pageNum" 		value="${cri.pageNum }">
+					<input type="hidden" id="amount"  		name="amount"  		value="${cri.amount}">
+					<input type="hidden" id="keyword"  		name="keyword"  	value="${cri.keyword}">
+					<input type="hidden" id="type"  		name="type"  		value="${cri.type}">
+					<input type="hidden" id="bno" 			name="bno" 			value="${board.bno }">
 					<div class="form-group">
 						<label>글번호</label> <input class="form-control" name='bno' readonly="readonly" value="${board.bno }">
 					</div>

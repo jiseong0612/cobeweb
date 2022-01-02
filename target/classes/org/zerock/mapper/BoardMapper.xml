@@ -95,7 +95,7 @@
 		where bno = #{bno}
 	</update>
 	
-	<delete id="delete">
+	<delete id="delete_board">
 		delete from tbl_board where bno = #{bno} 
 	</delete>
 </mapper>

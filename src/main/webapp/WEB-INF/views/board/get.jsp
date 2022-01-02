@@ -19,9 +19,11 @@ $(document).ready(function(){
 });
 </script>
 <form id="hddnFrm" method="get" action="/board/list">
-	<input type="hidden" id="pageNum" 	name="pageNum" 	value="${cri.pageNum }">
-	<input type="hidden" id="amount" 	name="amount" 	value="${cri.amount }">
-	<input type="hidden" id="bno" 		name="bno" 		value="${board.bno }">
+	<input type="hidden" id="pageNum" 		name="pageNum" 		value="${cri.pageNum }">
+	<input type="hidden" id="amount"  		name="amount"  		value="${cri.amount}">
+	<input type="hidden" id="keyword"  		name="keyword"  	value="${cri.keyword}">
+	<input type="hidden" id="type"  		name="type"  		value="${cri.type}">
+	<input type="hidden" id="bno" 			name="bno" 			value="${board.bno }">
 </form>
 <div class="row">
 	<div class="col-lg-12">
