@@ -35,7 +35,7 @@ $(document).ready(function(){
 		<div class="panel panel-default">
 			<div class="panel-heading">Board Modify</div>
 			<!-- /.panel-heading -->
-			<div class="panel-body">
+			<div class="panel-body"> 
 				<form id="hddnFrm" method="post" action="/board/modify">
 					<input type="hidden" id="pageNum" 		name="pageNum" 		value="${cri.pageNum }">
 					<input type="hidden" id="amount"  		name="amount"  		value="${cri.amount}">
