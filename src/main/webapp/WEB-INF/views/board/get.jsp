@@ -5,8 +5,56 @@
 <%@ include file="../includes/header.jsp"%>
 <%@ include file="../reply/replyJs.jsp" %>
 <script>
+var displayTime = function(timeValue){
+	var today = new Date();
+	var gap = today.getTime() - timeValue;
+	var dateObj = new Date(timeValue);
+	var str = '';
+	
+ 	if(gap > 24* 60 * 60){
+		console.log("하루가 지남");
+		var yy = dateObj.getFullYear();
+		var mm = dateObj.getMonth() + 1;
+		var dd = dateObj.getDate();
+		mm = ( mm < 9)? '0'+mm : mm;
+		dd = ( dd < 9)? '0'+dd : dd;
+		
+		return yy+"/"+mm+"/"+dd;
+	}else{
+		console.log("24시간이 아직 안 지남");
+		var hh = dateObj.getHours();
+		var mi = dateObj.getMinutes();
+		var ss = dateObj.getSeconds();
+		return hh+":"+mi+":"+ss;
+	}
+	
+} 
+
+var showList = function(page){
+	replyService.getList(
+		{
+			bno : $("#bno").val(), 
+			page : (page > 1)? page : 1
+		},
+		function(list){
+			var resultHtml = '';
+			
+			list.forEach(function(obj, i){
+				resultHtml +="<li class='left clearfix' data-rno='"+obj.rno+"'>";
+				resultHtml +="  <div><div class='header'><strong class='primary-font'>"+obj.replyer+"</strong>"; 
+				resultHtml +="    <small class='pull-right text-muted'>" +displayTime(obj.replyDate)+"</small></div>";
+				resultHtml +="    <p>"+obj.reply+"</p></div></li>";
+			});
+			
+			$(".chat").append(resultHtml)
+		}
+	);
+}
+
+
 $(document).ready(function(){
-/* 	replyService.add(
+	showList(1);
+	/* replyService.add(
 		{
 			reply:"test",
 			replyer:"tests,,,,",
@@ -16,27 +64,6 @@ $(document).ready(function(){
 			alert("result : "+ result);
 		}
 	) */
-	
-	replyService.getList(
-		{
-			bno : $("#bno").val(), 
-			page : "1"
-		},
-		function(result){
-			var resultHtml = '';
-			console.log(result);
-			
-			result.forEach(function(obj, i){
-				resultHtml +="<li class='left clearfix' data-rno='"+obj.rno+"'>";
-				resultHtml +="  <div><div class='header'><strong class='primary-font'>[" +obj.rno+"] "+obj.replyer+"</strong>"; 
-				resultHtml +="    <small class='pull-right text-muted'>" +obj.replyDate+"</small></div>";
-				resultHtml +="    <p>"+obj.reply+"</p></div></li>";
-			});
-			
-			$(".chat").append(resultHtml)
-		}
-		
-	);
 	
 	$(".listBtn").on("click", function(){
 		var operation = $(this).data("oper");
@@ -90,8 +117,22 @@ $(document).ready(function(){
 		</div>
 	</div>
 </div>
-<div class="panel-body">        
-	<ul class="chat">
-	</ul>
-</div>
+<!-- 댓글 div  시작 -->
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<i class="fa fa-comments fa-fw"></i>
+							댓글
+						<button id="addReplyBtn" class="btn btn-primary btn-xs pull-right"> 댓글 달기</button>
+					</div>
+					<div class="panel-body">
+						<ul class="chat" id="chatList">
+							<!-- 댓글이 여기에 달려야한다. -->
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 댓글 끝 -->
 <%@include file="../includes/footer.jsp"%>
