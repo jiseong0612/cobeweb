@@ -11,7 +11,9 @@ var displayTime = function(timeValue){
 	var dateObj = new Date(timeValue);
 	var str = '';
 	
- 	if(gap > 24* 60 * 60){
+	console.log(gap >(24* 60 * 60 * 1000));
+	
+ 	if(gap > (24* 60 * 60 * 1000)){
 		console.log("하루가 지남");
 		var yy = dateObj.getFullYear();
 		var mm = dateObj.getMonth() + 1;
