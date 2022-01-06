@@ -12,6 +12,10 @@ import org.zerock.mapper.ReplyMapper;
 public class ReplyService {
 	@Autowired
 	private ReplyMapper mapper;
+	
+	public int register(ReplyVO vo) {
+		return mapper.insert(vo);
+	}
 
 	public ReplyVO get(Long rno) {
 		return mapper.read(rno);
@@ -19,10 +23,6 @@ public class ReplyService {
 
 	public List<ReplyVO> getListWithPagaing(Criteria cri, Long bno) {
 		return mapper.getList(cri, bno);
-	}
-
-	public int register(ReplyVO vo) {
-		return mapper.insert(vo);
 	}
 
 	public int remove(Long rno) {

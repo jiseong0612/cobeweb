@@ -2,9 +2,42 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@include file="../includes/header.jsp"%>
+<%@ include file="../includes/header.jsp"%>
+<%@ include file="../reply/replyJs.jsp" %>
 <script>
 $(document).ready(function(){
+/* 	replyService.add(
+		{
+			reply:"test",
+			replyer:"tests,,,,",
+			bno : $("#bno").val()
+		},
+		function(result){
+			alert("result : "+ result);
+		}
+	) */
+	
+	replyService.getList(
+		{
+			bno : $("#bno").val(), 
+			page : "1"
+		},
+		function(result){
+			var resultHtml = '';
+			console.log(result);
+			
+			result.forEach(function(obj, i){
+				resultHtml +="<li class='left clearfix' data-rno='"+obj.rno+"'>";
+				resultHtml +="  <div><div class='header'><strong class='primary-font'>[" +obj.rno+"] "+obj.replyer+"</strong>"; 
+				resultHtml +="    <small class='pull-right text-muted'>" +obj.replyDate+"</small></div>";
+				resultHtml +="    <p>"+obj.reply+"</p></div></li>";
+			});
+			
+			$(".chat").append(resultHtml)
+		}
+		
+	);
+	
 	$(".listBtn").on("click", function(){
 		var operation = $(this).data("oper");
 		
@@ -56,5 +89,9 @@ $(document).ready(function(){
 
 		</div>
 	</div>
+</div>
+<div class="panel-body">        
+	<ul class="chat">
+	</ul>
 </div>
 <%@include file="../includes/footer.jsp"%>
