@@ -14,7 +14,6 @@ var displayTime = function(timeValue){
 	console.log(gap >(24* 60 * 60 * 1000));
 	
  	if(gap > (24* 60 * 60 * 1000)){
-		console.log("하루가 지남");
 		var yy = dateObj.getFullYear();
 		var mm = dateObj.getMonth() + 1;
 		var dd = dateObj.getDate();
@@ -23,10 +22,10 @@ var displayTime = function(timeValue){
 		
 		return yy+"/"+mm+"/"+dd;
 	}else{
-		console.log("24시간이 아직 안 지남");
 		var hh = dateObj.getHours();
 		var mi = dateObj.getMinutes();
 		var ss = dateObj.getSeconds();
+		
 		return hh+":"+mi+":"+ss;
 	}
 	
