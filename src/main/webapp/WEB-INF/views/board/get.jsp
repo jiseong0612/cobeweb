@@ -11,8 +11,6 @@ var displayTime = function(timeValue){
 	var dateObj = new Date(timeValue);
 	var str = '';
 	
-	console.log(gap >(24* 60 * 60 * 1000));
-	
  	if(gap > (24* 60 * 60 * 1000)){
 		var yy = dateObj.getFullYear();
 		var mm = dateObj.getMonth() + 1;
