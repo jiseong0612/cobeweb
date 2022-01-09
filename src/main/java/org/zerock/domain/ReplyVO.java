@@ -8,4 +8,5 @@ public class ReplyVO {
 	private Long bno, rno;
 	private String reply, replyer;
 	private Date replyDate, updateDate;
+	
 }
