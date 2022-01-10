@@ -42,7 +42,7 @@ var showReplyPage = function(page, replyCnt){
 	
 	str += '</ul>';
 	
-	$(".pagination").html(str);
+	$(".CommentPageDiv").html(str);
 }
 
 var displayTime = function(timeValue){
@@ -274,7 +274,7 @@ $(document).ready(function(){
 				</div>
 			</div>
 				<!-- 댓글 페이징 -->
-				<div class="pagination"></div>
+				<div class="CommentPageDiv pull-reight"></div>
 		</div>
 	</div><!-- 댓글 끝 -->
 		
