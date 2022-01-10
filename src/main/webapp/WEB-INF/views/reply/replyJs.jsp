@@ -60,7 +60,7 @@
 				contentType :"application/json; charset=utf-8",
 				success : function(result){
 					if(callback){
-						callback(result);
+						callback(result.replyCnt, result.list);
 					}
 				},
 				error : function(error){

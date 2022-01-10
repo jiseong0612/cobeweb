@@ -16,7 +16,7 @@
 		<![CDATA[
 			select * from (
     			select /*+ index(tbl_reply idx_reply)*/
-    			rownum rn, bno, reply, replyer, replyDate, updateDate
+    			rownum rn, rno, bno, reply, replyer, replyDate, updateDate
     			from tbl_reply
     			where bno = #{bno}
         			and 0 < rownum and rownum <= (#{cri.pageNum} * #{cri.amount})

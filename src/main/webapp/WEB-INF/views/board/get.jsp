@@ -5,6 +5,46 @@
 <%@ include file="../includes/header.jsp"%>
 <%@ include file="../reply/replyJs.jsp" %>
 <script>
+//전역 변수
+var pageNum = 1;
+var showReplyPage = function(page, replyCnt){
+	var pageNum = (page !=1) ? page : 1;
+	var endNum = Math.ceil(pageNum /10.0) * 10;
+	var startNum = endNum - 9;
+	var prev = startNum != 1;
+	var next = false;
+	if(endNum * 10 >= replyCnt){
+		endNum = Math.ceil(replyCnt / 10.0);
+	}
+	
+	if(endNum * 10 < replyCnt){
+		next = true;
+	}
+	
+	var str = '<ul class="pagination pull-right">';
+	
+	if(prev){
+		str += '<li class="page-item"><a class="page-link" href="'+(startNum-1)+'">Previous</a></li>';
+	}
+	
+	console.log("startNum >>> ", startNum);
+	console.log("endNum   >>> ", endNum);
+	console.log("pageNum  >>> ", pageNum);
+	for(var i = startNum; i <= endNum; i++){
+		var active = (pageNum == i) ? "active":"";
+		
+		str += '<li class="page-item '+active+'"> <a class="page-link" href="'+i+'">'+i+'</a></li>';
+	}
+	
+	if(next){
+		str += '<li class="page-item"><a class="page-link" href="'+(endNum+1)+'">Next</a></li>';
+	}
+	
+	str += '</ul>';
+	
+	$(".pagination").html(str);
+}
+
 var displayTime = function(timeValue){
 	var today = new Date();
 	var gap = today.getTime() - timeValue;
@@ -36,17 +76,32 @@ var showList = function(page){
 			bno : $("#bno").val(), 
 			page : (page > 1)? page : 1
 		},
-		function(list){
+		function(replyCnt, list){
+			console.log("replyCnt >>> ", replyCnt );
+			console.log("list >>> ", list );
+			
+			if(page === -1 ){
+				pageNum = Math.ceil(replyCnt/ 10.0);
+				showList(pageNum);
+				return;
+			}
+			
+			if(list == null || list.length === 0){
+				return;
+			}
+			
 			var resultHtml = '';
 			
 			list.forEach(function(obj, i){
 				resultHtml +="<li class='left clearfix' data-rno='"+obj.rno+"'>";
 				resultHtml +="  <div><div class='header'><strong class='primary-font'>"+obj.replyer+"</strong>"; 
-				resultHtml +="    <small class='pull-right text-muted'>" +displayTime(obj.replyDate)+"</small></div>";
+				resultHtml +="    <small class='pull-right text-muted'>" +displayTime(obj.updateDate)+"</small></div>";
 				resultHtml +="    <p>"+obj.reply+"</p></div></li>";
 			});
 			
 			$(".chat").html(resultHtml)
+			
+			showReplyPage(page, replyCnt);
 		}
 	);
 }
@@ -66,6 +121,7 @@ $(document).ready(function(){
 	var modalCloseBtn = $("#modalCloseBtn");
 	
 	$("#addReplyBtn").on("click", function(){
+		$("#replyer").attr("readonly", "");
 		modal.find("input").val("");
 		modalInputReplyDate.closest("div").hide();
 		modal.find("button").hide();
@@ -86,7 +142,7 @@ $(document).ready(function(){
 			modal.find("input").val("");
 			modal.modal("hide");
 			
-			showList(1);
+			showList(-1);
 		});
 	});
 	
@@ -94,12 +150,14 @@ $(document).ready(function(){
 	modalRemoveBtn.on("click", function(){
 		var rno = modal.data("rno");
 		console.log(rno);
-		replyService.remove(rno, function(result){
-			alert(result);
-			modal.modal("hide");
-			
-			showList(1);	
-		});
+		if(confirm("삭제하시겠습니까?")){
+			replyService.remove(rno, function(result){
+				alert(result);
+				modal.modal("hide");
+				
+				showList(pageNum);	
+			});
+		}
 	});
 	
 	//모달창 수정 누르면
@@ -114,18 +172,22 @@ $(document).ready(function(){
 			alert(result);
 			modal.modal("hide");
 			
-			showList(1);	
+			showList(pageNum);	
 		});
 	});
 	
+	//댓글 목록 리스트를 누르면
 	$(".chat").on("click", "li", function(){
+		$("#replyer").attr("readOnly", "readOnly");
+		$("#replyDate").attr("readOnly", "readOnly");
+		
 		var rno = $(this).data("rno");
 		$(".modal").data("rno", rno);
 		
 		replyService.get(rno, function(result){
 			modalInputReply.val(result.reply);
 			modalInputReplyer.val(result.replyer);
-			modalInputReplyDate.val(displayTime(result.replyDate));
+			modalInputReplyDate.val(displayTime(result.updateDate));
 		});
 		
 		$(".modal").find("button").hide();
@@ -136,18 +198,14 @@ $(document).ready(function(){
 		
 	});
 	
-	
-	
-	/* replyService.add(
-		{
-			reply:"test",
-			replyer:"tests,,,,",
-			bno : $("#bno").val()
-		},
-		function(result){
-			alert("result : "+ result);
-		}
-	) */
+	//댓글 페이지 번호를 누르면
+	$(".pagination").on("click", "li a", function(e){
+		e.preventDefault();
+		
+		pageNum = $(this).attr("href");
+		
+		showList(pageNum);
+	});
 	
 	$(".listBtn").on("click", function(){
 		var operation = $(this).data("oper");
@@ -201,24 +259,24 @@ $(document).ready(function(){
 		</div>
 	</div>
 </div>
-<!-- 댓글 div  시작 -->
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<i class="fa fa-comments fa-fw"></i>
-							댓글
-						<button id="addReplyBtn" class="btn btn-primary btn-xs pull-right" data-toggle="modal" data-target="#myModal"> 댓글 달기</button>
-					</div>
-					<div class="panel-body">
-						<ul class="chat" id="chatList">
-							<!-- 댓글이 여기에 달려야한다. -->
-						</ul>
-					</div>
+	<div class="row"><!-- 댓글 div  시작 -->
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<i class="fa fa-comments fa-fw"></i>
+						댓글
+					<button id="addReplyBtn" class="btn btn-primary btn-xs pull-right" data-toggle="modal" data-target="#myModal"> 댓글 달기</button>
+				</div>
+				<div class="panel-body">
+					<ul class="chat" id="chatList">
+						<!-- 댓글이 여기에 달려야한다. -->
+					</ul>
 				</div>
 			</div>
+				<!-- 댓글 페이징 -->
+				<div class="pagination"></div>
 		</div>
-		<!-- 댓글 끝 -->
+	</div><!-- 댓글 끝 -->
 		
 		<!-- 댓글모달 -->
 		<div class="modal fade" data-rno='' id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
