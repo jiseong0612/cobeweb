@@ -18,6 +18,11 @@ public class SampleAOPServiceTests {
 	@Test
 	public void AOPTest() throws Exception {
 		log.info("service >>> "+serivce);
-		log.info(serivce.doAddd("111", "222"));
+		log.info(serivce.doAdd("111", "222"));
+	}
+	
+	@Test
+	public void errorTest() throws Exception {
+		log.info(serivce.doAdd("123", "ABC"));
 	}
 }

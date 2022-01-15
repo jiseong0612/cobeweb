@@ -46,7 +46,7 @@ public class BoardMapperTests {
 
 	@Test
 	public void readTest() {
-		System.out.println(mapper.read(10L));
+		System.out.println(mapper.read(235L));
 	}
 
 	@Test

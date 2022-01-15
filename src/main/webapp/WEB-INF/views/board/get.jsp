@@ -7,6 +7,8 @@
 <script>
 //전역 변수
 var pageNum = 1;
+
+//댓글 페이징
 var showReplyPage = function(page, replyCnt){
 	var pageNum = (page !=1) ? page : 1;
 	var endNum = Math.ceil(pageNum /10.0) * 10;
@@ -121,7 +123,6 @@ $(document).ready(function(){
 	var modalCloseBtn = $("#modalCloseBtn");
 	
 	$("#addReplyBtn").on("click", function(){
-		$("#replyer").attr("readonly", "");
 		modal.find("input").val("");
 		modalInputReplyDate.closest("div").hide();
 		modal.find("button").hide();
@@ -199,7 +200,7 @@ $(document).ready(function(){
 	});
 	
 	//댓글 페이지 번호를 누르면
-	$(".pagination").on("click", "li a", function(e){
+	$(".CommentPageDiv").on("click", "li a", function(e){
 		e.preventDefault();
 		
 		pageNum = $(this).attr("href");

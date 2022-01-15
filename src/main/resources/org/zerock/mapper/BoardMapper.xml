@@ -42,6 +42,7 @@
 				, writer
 				, regdate
 				, updateDate
+				, replycnt
 			from 
 				tbl_board
 			where 
@@ -62,6 +63,10 @@
 		<include refid="criteria"></include>
 		0  <![CDATA[ < bno ]]>
 	</select>
+	
+	<update id="updateReplyCnt">
+		update tbl_board set replycnt = replycnt + #{amount} where bno =#{bno}
+	</update>
 	
 	<insert id="insert">
 		insert into 

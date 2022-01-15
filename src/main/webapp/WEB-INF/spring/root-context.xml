@@ -4,10 +4,12 @@
 	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
@@ -36,6 +38,15 @@
 	<context:component-scan base-package="org.zerock.service"></context:component-scan>
 	<context:component-scan base-package="org.zerock.aop"></context:component-scan>
 	
+	<!-- 트랜젝션을 관리하는 빈 객체 -->
+	<!-- transaction Manager(트랜젝션 매니저) -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
 	<!-- 이 녀석에 의해 LogAdvice 클래스에 설정한 @Before가 동작 -->
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	
+	<!-- 어노테이션 기반으로 트랜젝션을 설정할 수 있도록함 -->
+	<tx:annotation-driven/>
 </beans>
