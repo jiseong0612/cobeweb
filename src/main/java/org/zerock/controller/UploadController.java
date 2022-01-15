@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.SimpleFormatter;
 
 import org.springframework.stereotype.Controller;
@@ -39,12 +40,20 @@ public class UploadController {
 	}
 	
 	@PostMapping("/uplaodPost")
-	public void uplaodPost(MultipartFile[] uploadFile) {
+	public void uplaodPost(MultipartFile[] uploadFile) throws IllegalStateException, IOException {
 		String path = "c:\\upload";
 		
+		//파일 객체에서 왼쪽은 경로를 오른쪽은 파일을 예기한다.
+		File getPath = new File(path, "wltjd\\sara");
+		
+		if(getPath.exists() == false) {
+			getPath.mkdirs();
+		}
 		for(MultipartFile file : uploadFile	) {
-			System.out.println(file.getOriginalFilename());
-			System.out.println(file.getSize());
+			UUID uuid = UUID.randomUUID();
+			File uploadFiles = new File(getPath, uuid.toString()+"_"+ file.getOriginalFilename());
+			
+			file.transferTo(uploadFiles);
 		}
 	}
 	
