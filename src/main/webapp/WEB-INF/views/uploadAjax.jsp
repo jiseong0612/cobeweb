@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 <script src="/resources/vendor/jquery/jquery.js"></script>
 <script>
-var checkExtension(fileName, fileSize){
+var checkExtension = function(fileName, fileSize){
 	var regex = new RegExp("(.*?)\.(exe|sh|zip|alz)$");
 	var maxSize = 1024* 1024*5;
 	
@@ -31,21 +31,22 @@ $(document).ready(function(){
 		console.log(files);
 		
 		for(var i =0; i<files.length; i++){
-			if(!checkExtension(files[i].name, files[i].Size)){
+			if(checkExtension(files[i].name, files[i].size)){
 				return false;
 			}
 			
 			fd.append("uploadFile", files[i]);			
 		}
-		
+		console.log(fd);
 		$.ajax({
-			url:"/uplaodPost",
+			url:"/uploadAjaxAction",
 			data : fd,
 			type :"POST",
 			contentType : false,
 			processData : false,
 			success : function(result){
 				console.log("success....");
+				console.log(result);
 			},
 			error : function(error){
 				console.log("error....", error);

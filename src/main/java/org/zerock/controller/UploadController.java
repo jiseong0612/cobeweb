@@ -1,23 +1,38 @@
 package org.zerock.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
-import java.util.logging.SimpleFormatter;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.zerock.domain.AttachDTO;
+
+import net.coobird.thumbnailator.Thumbnailator;
 
 @Controller
 public class UploadController {
 	
 	@GetMapping("/uploadForm")
 	public void uploadForm() {
-		
+	}
+	
+	@GetMapping("/uploadAjax")
+	public void uploadAjax() {
 	}
 	
 	@PostMapping("/uploadAction")
@@ -34,32 +49,72 @@ public class UploadController {
 		}
 	}
 	
-	@GetMapping("/uploadAjax")
-	public void uploadAjax() {
-		
-	}
-	
-	@PostMapping("/uplaodPost")
-	public void uplaodPost(MultipartFile[] uploadFile) throws IllegalStateException, IOException {
+	@PostMapping(value = "/uploadAjaxAction", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody ResponseEntity<List<AttachDTO>> uploadAjaxAction(MultipartFile[] uploadFile) throws IllegalStateException, IOException {
+		List<AttachDTO> list = new ArrayList<AttachDTO>();
 		String path = "c:\\upload";
 		
-		//파일 객체에서 왼쪽은 경로를 오른쪽은 파일을 예기한다.
-		File getPath = new File(path, "wltjd\\sara");
-		
-		if(getPath.exists() == false) {
-			getPath.mkdirs();
+		//파일 객체에서 왼쪽은 부모디렉토리 오른쪽은 자식디렉토리를 뜻함
+		File uploadPath = new File(path, getPath());
+		System.out.println(uploadPath.toPath());
+		if(uploadPath.exists() == false) {
+			uploadPath.mkdirs();
 		}
 		for(MultipartFile file : uploadFile	) {
+			AttachDTO attach = new AttachDTO();
 			UUID uuid = UUID.randomUUID();
-			File uploadFiles = new File(getPath, uuid.toString()+"_"+ file.getOriginalFilename());
+			String uploadFileName = uuid.toString()+"_"+file.getOriginalFilename();
 			
-			file.transferTo(uploadFiles);
-		}
+			attach.setUuid(uuid.toString());
+			attach.setUloadPath(getPath());
+			attach.setFileName(uploadFileName);
+			//저장할 파일객체 생성! (경로, 파일명)
+			File saveFile = new File(uploadPath, uploadFileName);
+			
+			//파일 업로드!(원본 파일은 원본대로 올라가고 이미지일경우 섬네일도 생성하여 같이 올린다)
+			file.transferTo(saveFile);
+			
+			//만약 이미지 파일이라면? 섬네일 생성
+			if(checkImageType(saveFile)) {
+				attach.setImage(true);
+				
+				//섬네일용 파일 객체를 생성한다.	섬네일 파일명 : s_ + uuid.toString + getOriginalFilename();
+				FileOutputStream fos = new FileOutputStream(new File(uploadPath, "s_"+uploadFileName));
+				
+				//실체 섬네일 파일을 생성한다.
+				Thumbnailator.createThumbnail(file.getInputStream(), fos, 100 ,100);
+				fos.close();
+			}else {
+				attach.setImage(false);
+			}
+			
+			//첨부파일 객체를 리스트에 담고 리스트를 리턴해준다.
+			list.add(attach);
+		}// for() end
+		
+		return (list.size() != 0)
+				? new ResponseEntity<List<AttachDTO>>(list, HttpStatus.OK)
+				: new ResponseEntity<List<AttachDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	public static String getPath() {
+	private String getPath() {
 		SimpleDateFormat sdf= new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
 		return sdf.format(date).replace("/", File.separator);
+	}
+	
+	//nio = The attached Javadoc could not be retrieved as the specified Javadoc location is either wrong or currently not accessible
+	//io =  The attached Javadoc could not be retrieved as the specified Javadoc location is either wrong or currently not accessible.
+
+	private boolean checkImageType(File file) {
+		try {
+			String contentType = Files.probeContentType(file.toPath());
+			System.out.println(file.toPath());
+			System.out.println(contentType);
+			return contentType.startsWith("image");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
