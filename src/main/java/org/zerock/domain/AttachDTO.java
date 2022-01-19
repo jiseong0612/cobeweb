@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AttachDTO {
-	private  String uloadPath, fileName, uuid;
+	private  String uploadPath, fileName, uuid;
 	private boolean image;
 }
