@@ -1,0 +1,46 @@
+/* 파일업로드 리스트 */
+.uploadResult {
+	width : 100%;
+	background-color : lightgray;
+}
+	
+.uploadResult Ul{
+	display : flex;
+	flex-flow : row;
+	justisfy-content : center;
+	align-items : center;
+}
+	
+.uploadResult ul li{
+	list-style : none;
+	padding : 10px;
+}
+	
+.uploadResult up li img{
+	width : 20px;
+}
+
+/* 섬네일 이미지 */
+.bigPictureWrapper {
+  position: absolute;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  top:0%;
+  width:100%;
+  height:100%;
+  background-color: gray; 
+  z-index: 100;
+  background:rgb(255,255,255,0.5);
+}
+
+.bigPicture {
+  position: relative;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bigPicture img {
+	width:600px;
+}

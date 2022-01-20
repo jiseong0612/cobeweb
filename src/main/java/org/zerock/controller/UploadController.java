@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
@@ -63,7 +64,7 @@ public class UploadController {
 	}
 	
 	/**
-	 * AJAX 파일 업로드
+	 * 파일 업로드 (AJAX)
 	 * 
 	 * @param uploadFile (클라이언트에서 넘어온 var fd = new FormData();)
 	 * @return ResponseEntity<List<AttachDTO>>
@@ -138,6 +139,9 @@ public class UploadController {
 		
 		String resourceName = resource.getFilename();
 		
+		//uuid 제거 순수 파일명만 리턴!!
+		String resourceOriginalName = resourceName.substring(resourceName.lastIndexOf("_")+1);
+		
 		HttpHeaders header = new HttpHeaders();
 		try {
 			String downLoadName = "";
@@ -145,16 +149,15 @@ public class UploadController {
 			//IE browser
 			if(userAgent.contains("Trident")) {
 				log.info("IE browser");
-				downLoadName = URLEncoder.encode(resourceName, "utf-8");
+				downLoadName = URLEncoder.encode(resourceOriginalName, "utf-8");
 			}
 			//chrome browser
 			else {
-				downLoadName = new String(resourceName.getBytes("utf-8"), "ISO-8859-1");
+				downLoadName = new String(resourceOriginalName.getBytes("utf-8"), "ISO-8859-1");
 			}
 			//content-disposition : 컨텐츠가 웹페이지의 일부인지, 혹은 첨부파일인지 알려주는 헤더
 			header.add("content-disposition", "attachment; filename="+downLoadName);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
@@ -183,10 +186,29 @@ public class UploadController {
 			header.add("Content-Type", Files.probeContentType(file.toPath()));
 			result = new ResponseEntity<>(buf, header, HttpStatus.OK);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	@PostMapping("/deleteFile")
+	public ResponseEntity<String> deleteFile(String fileName, String type){
+		try {
+			File file = new File("c:\\upload\\"+URLDecoder.decode(fileName, "UTF-8"));
+			file.delete();
+			
+			if("image".equals(type)) {
+				String largeFileName = file.getAbsolutePath().replace("s_", "");
+				System.out.println(file.getAbsolutePath());
+				
+				file = new File(largeFileName);
+				file.delete();
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>("deleted!", HttpStatus.OK);
 	}
 	
 	/**
