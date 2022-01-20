@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-
+	
     <title>SB Admin 2 - Bootstrap Admin Theme</title>
 
     <!-- Bootstrap Core CSS -->
@@ -33,6 +33,9 @@
 	
 	<!-- jQuery -->
     <script src="/resources/vendor/jquery/jquery.js"></script>
+    
+    <!-- 파일업로드 css -->
+    <link rel="stylesheet" href="/resources/css/style.css">
     <script>
     $(document).ready(function() {
         $(".sidebar-nav")
