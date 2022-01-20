@@ -32,15 +32,22 @@ import net.coobird.thumbnailator.Thumbnailator;
 @Controller
 @Log4j
 public class UploadController {
-	
-	@GetMapping("/uploadForm")
+
+	/**
+	 * uploadForm : 폼타입 파일업로드 화면
+	 * uploadAjax : AJAX 파일업로드 화면
+	 */
+	@GetMapping(value = {"/uploadForm", "/uploadAjax"})
 	public void uploadForm() {
 	}
 	
-	@GetMapping("/uploadAjax")
-	public void uploadAjax() {
-	}
-	
+	/**
+	 * 폼타입 파일업로드
+	 * 
+	 * @param uploadFile
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
 	@PostMapping("/uploadAction")
 	public void upload(MultipartFile[] uploadFile) throws IllegalStateException, IOException {
 		String path = "c:\\upload";
@@ -55,8 +62,12 @@ public class UploadController {
 		}
 	}
 	
-	
-	//파일 업로드
+	/**
+	 * AJAX 파일 업로드
+	 * 
+	 * @param uploadFile (클라이언트에서 넘어온 var fd = new FormData();)
+	 * @return ResponseEntity<List<AttachDTO>>
+	 */
 	@PostMapping(value = "/uploadAjaxAction", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody ResponseEntity<List<AttachDTO>> uploadAjaxAction(MultipartFile[] uploadFile) throws IllegalStateException, IOException {
 		List<AttachDTO> list = new ArrayList<AttachDTO>();
@@ -64,18 +75,21 @@ public class UploadController {
 		
 		//파일 객체에서 왼쪽은 부모디렉토리 오른쪽은 자식디렉토리를 뜻함
 		File uploadPath = new File(path, getPath());
-		System.out.println(uploadPath.toPath());
+		
 		if(uploadPath.exists() == false) {
 			uploadPath.mkdirs();
 		}
+		
 		for(MultipartFile file : uploadFile	) {
 			AttachDTO attach = new AttachDTO();
+			
 			UUID uuid = UUID.randomUUID();
 			String uploadFileName = uuid.toString()+"_"+file.getOriginalFilename();
 			
 			attach.setUuid(uuid.toString());
 			attach.setUploadPath(getPath());
 			attach.setFileName(uploadFileName);
+			
 			//저장할 파일객체 생성! (경로, 파일명)
 			File saveFile = new File(uploadPath, uploadFileName);
 			
@@ -90,8 +104,10 @@ public class UploadController {
 				FileOutputStream fos = new FileOutputStream(new File(uploadPath, "s_"+uploadFileName));
 				
 				//FileOutputStream : 서버에서 실제 파일을 생성
-				//FileInputStream : 실제 파일을 서버에서 읽을 때
+				//FileInputStream : 실제 파일을 서버에서 읽고 업데이트 작업을 할 떄
+				//File : 파일객체를 서버로 가져올떈
 				Thumbnailator.createThumbnail(file.getInputStream(), fos, 100 ,100);
+				
 				fos.close();
 			}else {
 				attach.setImage(false);
@@ -105,10 +121,17 @@ public class UploadController {
 				? new ResponseEntity<List<AttachDTO>>(list, HttpStatus.OK)
 				: new ResponseEntity<List<AttachDTO>>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	//download
+	
+	/**
+	 * 파일 다운로드
+	 * 
+	 * @param fileName :상세경로(/년/월/일)+uuid.toString_파일원본이름.확장자
+	 * @return ResponseEntity<byte[]>
+	 */
 	@GetMapping(value = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<Resource> downloadFile(@RequestHeader("User-Agent") String userAgent, String fileName){
 		Resource resource = new FileSystemResource("c:\\upload\\"+fileName);
+		
 		if(resource.exists() == false) {
 			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
 		}
@@ -134,12 +157,15 @@ public class UploadController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 		return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
 	}
-	
-	//display
+
+	/**
+	 * 업로드 후 파일 노출
+	 * 
+	 * @param  fileName :상세경로(/년/월/일)+uuid.toString_파일원본이름.확장자
+	 * @return ResponseEntity<byte[]>
+	 */
 	@GetMapping("/display")
 	public ResponseEntity<byte[]> getFile(String fileName) throws IOException{
 		log.info("fileName: " + fileName);
@@ -163,17 +189,23 @@ public class UploadController {
 		return result;
 	}
 	
-	//파일 저장경로 날짜별로 생성
+	/**
+	 * 파일 저장경로 날짜별로 생성
+	 * 
+	 * @return String
+	 */
 	private String getPath() {
 		SimpleDateFormat sdf= new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
 		return sdf.format(date).replace("/", File.separator);
 	}
 	
-	//nio = The attached Javadoc could not be retrieved as the specified Javadoc location is either wrong or currently not accessible
-	//io =  The attached Javadoc could not be retrieved as the specified Javadoc location is either wrong or currently not accessible.
-
-	//파일 타입 확인
+	/**
+	 * 파일 확장자 체크
+	 * 
+	 * @param file 객체
+	 * @return boolean
+	 */
 	private boolean checkImageType(File file) {
 		try {
 			String contentType = Files.probeContentType(file.toPath());

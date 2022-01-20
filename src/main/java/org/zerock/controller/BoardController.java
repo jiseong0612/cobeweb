@@ -24,15 +24,12 @@ public class BoardController {
 	@Autowired
 	private BoardService service;
 	
-	@GetMapping("/TestJsp")
-	public void TestJsp() {
-		//자바스크립트 if(조건절) 안에 익명함수 명을 넣으면 
-		//true false 있는지 없는지 체크해 준다.
-		System.out.println("있다 없다");
-		
-	}
-	
-	
+	/**
+	 * 게시판 목록 조회
+	 * 
+	 * @param model
+	 * @param cri
+	 */
 	@GetMapping("/list")
 	public void list(Model model, Criteria cri) {
 		List<BoardVO> list = service.getList(cri);
@@ -40,16 +37,32 @@ public class BoardController {
 		model.addAttribute("pageMaker", new PageDTO(cri, service.getTotalCount(cri)));
 	}
 
-	@GetMapping("/register")
-	public void registerGet() {
-
-	}
-
+	/**
+	 * 조회 및 수정화면 이동
+	 * 
+	 * @param bno
+	 * @param model
+	 * @param cri
+	 */
 	@GetMapping({ "/get", "/modify" })
 	public void get(Long bno, Model model, @ModelAttribute("cri") Criteria cri) {
 		model.addAttribute("board", service.get(bno));
 	}
 
+	/**
+	 * 작성화면 이동
+	 */
+	@GetMapping("/register")
+	public void registerGet() {
+	}
+	
+	/**
+	 * 글 작성
+	 * 
+	 * @param board
+	 * @param rttr
+	 * @return
+	 */
 	@PostMapping("/register")
 	public String register(BoardVO board, RedirectAttributes rttr) {
 		Long bno = service.register(board);
@@ -61,6 +74,14 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
+	/**
+	 * 글 수정
+	 * 
+	 * @param board
+	 * @param cri
+	 * @param rttr
+	 * @return
+	 */
 	@PostMapping("/modify")
 	public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr) {
 		int result = service.modify(board);
@@ -74,6 +95,14 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 
+	/**
+	 * 글 삭제
+	 * 
+	 * @param bno
+	 * @param cri
+	 * @param rttr
+	 * @return
+	 */
 	@PostMapping("/remove")
 	public String remove(Long bno, Criteria cri, RedirectAttributes rttr) {
 		int result = service.remove(bno);
