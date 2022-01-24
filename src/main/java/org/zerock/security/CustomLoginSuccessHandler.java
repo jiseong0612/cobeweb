@@ -13,8 +13,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import lombok.extern.log4j.Log4j;
 
-//AuthenticationSuccessHandler : 로그인 성공 이후에 특정한 동작을 하도록 제어
 @Log4j
+//AuthenticationSuccessHandler : 로그인 성공 이후에 특정한 동작을 하도록 제어
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	@Override

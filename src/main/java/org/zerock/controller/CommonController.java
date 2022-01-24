@@ -4,6 +4,7 @@ import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.extern.log4j.Log4j;
 
@@ -32,7 +33,7 @@ public class CommonController {
 	 */
 	@GetMapping("/customLogin")
 	public void customLogin(String error, String logout, Model model) {
-		System.out.println("로그인을 하던 안 하던 우선 여기로 온다");
+		log.info("로그인을 하던 안 하던 우선 여기로 온다");
 		log.info("error : " + error);
 		log.info("logout : " + logout);
 
@@ -50,7 +51,6 @@ public class CommonController {
 	 */
 	@GetMapping("/customLogout")
 	public void customLogout() {
-
+		log.info("@GetMapping custom logout");
 	}
-
 }

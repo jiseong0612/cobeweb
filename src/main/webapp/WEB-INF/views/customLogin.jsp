@@ -15,6 +15,7 @@
 	<h2>
 		<c:out value="${logout }" />
 	</h2>
+	
 	<form action="/login" method="post">
 		<input type="text" name="username" value="admin"> <br>
 		<input type="password" name="password" value="admin1"> <br>
