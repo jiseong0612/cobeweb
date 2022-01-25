@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		
+<!-- 빈등록 -->
+<bean id="CustomAccessDeniedhandler" class="org.zerock.security.CustomAccessDeniedhandler"></bean>
+<bean id="CustomLoginSuccessHandler" class="org.zerock.security.CustomLoginSuccessHandler"></bean>
+<bean id="CustomLogoutHandler" class="org.zerock.security.CustomLogoutHandler"></bean>
+<!-- <bean id="CustomNoOpPasswordEncoder" class="org.zerock.security.CustomNoOpPasswordEncoder"></bean> -->
+<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+
+<!-- 웹접근시 핸들링 -->
+<security:http  auto-config="true" use-expressions="true">
+	<security:intercept-url pattern="/sample/all" access="permitAll"/>
+	<security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MANAGER')"/>
+	<security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')"/>
+	<!-- 로그인  -->
+	<security:form-login login-page="/customLogin" authentication-success-handler-ref="CustomLoginSuccessHandler"/>
+	<!-- 로그아웃  -->
+	<security:logout logout-url="/customLogout" success-handler-ref="CustomLogoutHandler" invalidate-session="true" />
+	<!-- 접근 권한  -->
+	<security:access-denied-handler ref="CustomAccessDeniedhandler" />
+</security:http>
+
+
+
+<!-- 인증 매니저 -->
+<security:authentication-manager>
+	<!-- 인증 제공 -->
+	<security:authentication-provider>
+	<!-- 디비 계정 정보 사용 -->
+	<security:jdbc-user-service 
+		data-source-ref="dataSource" 
+		users-by-username-query="select userid, userpw, enabled from tbl_member where userid = ? "
+		authorities-by-username-query="select userid, auth from tbl_member_auth where userid = ? "
+	/> 
+	
+	<security:password-encoder ref="bcryptPasswordEncoder"/> 	<!-- 패스워드 암호화 -->
+		
+	<!-- <security:password-encoder ref="CustomNoOpPasswordEncoder"/> >>> 패스워드 암호화 하지 않는법 -->
+		<!-- <security:user-service> >>>> inMemoryUserDetailsManager 
+			<security:user name="member" password="{noop}member1" authorities="ROLE_MANAGER"/>
+			<security:user name="admin" password="{noop}admin1" authorities="ROLE_MANAGER, ROLE_ADMIN"/>
+		</security:user-service> -->
+	</security:authentication-provider>
+</security:authentication-manager>
+
+
+<context:component-scan base-package="org.zerock.security"></context:component-scan>
+
+</beans>
