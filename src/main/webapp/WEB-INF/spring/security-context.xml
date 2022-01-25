@@ -11,7 +11,7 @@
 <bean id="CustomAccessDeniedhandler" class="org.zerock.security.CustomAccessDeniedhandler"></bean>
 <bean id="CustomLoginSuccessHandler" class="org.zerock.security.CustomLoginSuccessHandler"></bean>
 <bean id="CustomLogoutHandler" class="org.zerock.security.CustomLogoutHandler"></bean>
-<bean id="CustomNoOpPasswordEncoder" class="org.zerock.security.CustomNoOpPasswordEncoder"></bean>
+<!-- <bean id="CustomNoOpPasswordEncoder" class="org.zerock.security.CustomNoOpPasswordEncoder"></bean> -->
 <bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
 
 <!-- 웹접근시 핸들링 -->
@@ -33,8 +33,14 @@
 <security:authentication-manager>
 	<!-- 인증 제공 -->
 	<security:authentication-provider>
-		<security:jdbc-user-service data-source-ref="dataSource"/>  <!-- 디비 계정 정보 사용 -->
-		<security:password-encoder ref="bcryptPasswordEncoder"/> 	<!-- 패스워드 암호화 -->
+	<!-- 디비 계정 정보 사용 -->
+	<security:jdbc-user-service 
+		data-source-ref="dataSource" 
+		users-by-username-query="select userid, userpw, enabled from tbl_member where userid = ? "
+		authorities-by-username-query="select userid, auth from tbl_member_auth where userid = ? "
+	/> 
+	
+	<security:password-encoder ref="bcryptPasswordEncoder"/> 	<!-- 패스워드 암호화 -->
 		
 	<!-- <security:password-encoder ref="CustomNoOpPasswordEncoder"/> >>> 패스워드 암호화 하지 않는법 -->
 		<!-- <security:user-service> >>>> inMemoryUserDetailsManager 

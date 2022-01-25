@@ -15,10 +15,12 @@
 	<h2>
 		<c:out value="${logout }" />
 	</h2>
-	
+	<h4>아이디 : user0 ~ user99</h2>
+	<h4>비번 : pw0 ~ pw99</h2>
+	<h4>권한 : 0~ 79? 일반 : 80~89 ? 멤버 : 관리자(90~99)</h2>
 	<form action="/login" method="post">
-		<input type="text" name="username" value="admin"> <br>
-		<input type="password" name="password" value="admin1"> <br>
+		<input type="text" name="username" value="user90"> <br>
+		<input type="password" name="password" value="pw90"> <br>
 		<input type="submit" value="제출">
 		<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
 	</form>
