@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@include file="../includes/header.jsp"%>
-<<script src="/resources/js/reply.js"></script>
+<script src="/resources/js/reply.js"></script>
 
 <div class="row">
 	<div class="col-lg-12">
@@ -41,13 +41,23 @@
 		</div>
 	</div>
 </div>
-<form id="operForm" action="/board/modify" method="get">
-	<input type="hidden" id="pageNum" name="pageNum" value='<c:out value="${cri.pageNum }"/>'>
-	<input type="hidden" id="amount" name="amount" value='<c:out value="${cri.amount }"/>'>
-	<input type="hidden" id="bno" name="bno" value='<c:out value="${board.bno }"/>'>
-	<input type="hidden" name="type" value="${cri.type }">
-	<input type="hidden" name="keyWord" value="${cri.keyWord }">
-</form>
+
+<div class="bigPictureWrapper">
+	<div class="bigPicture"></div>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">Files</div>
+			<div class="panel-body">
+				<div class='uploadResult'> 
+					<ul>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
 <!-- 댓글 -->
 <div class='row'>
@@ -108,6 +118,13 @@
 		</div>
 	</div>
 </div>
+<form id="operForm" action="/board/modify" method="get">
+	<input type="hidden" id="pageNum" name="pageNum" value='<c:out value="${cri.pageNum }"/>'>
+	<input type="hidden" id="amount" name="amount" value='<c:out value="${cri.amount }"/>'>
+	<input type="hidden" id="bno" name="bno" value='<c:out value="${board.bno }"/>'>
+	<input type="hidden" name="type" value="${cri.type }">
+	<input type="hidden" name="keyWord" value="${cri.keyWord }">
+</form>
 <script>
 	$(document).ready(function() {
 		var operForm = $('#operForm');
@@ -126,6 +143,44 @@
 		var replyPageFooter = $('.panel-footer');
 		
 		showList(1);
+		
+		$.getJSON("/board/getAttachList", {bno : bnoValue},
+			function(arr){
+				var str = '';
+				
+				$(arr).each(function(i, attach){
+					if(attach.fileType){
+						var fileCallPath = encodeURIComponent(attach.uploadPath + '/s_' + attach.uuid + '_' + attach.fileName);
+						str += '<li data-path="'+attach.uploadPath+'" data-uuid="'+attach.uuid+'" data-filename="'+attach.fileName+'" data-type="'+attach.fileType+'">';
+						str += '    <div>';
+						str += '        <img src="/display?fileName='+fileCallPath+'">';
+						str += '    </div>';
+						str += '</li>';						
+					}else{
+						str += '<li data-path="'+attach.uploadPath+'" data-uuid="'+attach.uuid+'" data-filename="'+attach.fileName+'" data-type="'+attach.fileType+'">';
+						str += '    <div>';
+						str += '        <span>'+attach.fileName+'</span></br>';
+						str += '        <img src="/resources/img/attach.jpg">';
+						str += '    </div>';
+						str += '</li>';
+					}
+				});
+				
+				$('.uploadResult ul').html(str);
+			}
+		);
+		
+		$('.uploadResult').on('click', 'li', function(){
+			var liObj = $(this);
+			
+			var path = encodeURIComponent(liObj.data('path')+'/'+liObj.data('uuid')+'_'+liObj.data('filename'));
+			
+			if(liObj.data('type')){
+				showImage(path.replace(new RegExp(/\\/g),'/'));
+			}else{
+				window.location ='/download?fileName='+path;			
+			}
+		});
 		
 		$('button[data-oper="modify"]').on('click', function(){
 			operForm.submit();
@@ -223,8 +278,23 @@
 			showList(pageNum);
 		});
 		
-		function showList(page){
+		$('.bigPictureWrapper').on('click', function(){
+			$('.bigPicture').animate({width : '0%', height : '0%'},500);
+			setTimeout(function(){
+				$('.bigPictureWrapper').hide();
+			});
+		});
+		
+		function showImage(fileCallPath){
+			$('.bigPictureWrapper').css('display', 'flex').show();
 			
+			$('.bigPicture')
+				.html('<img src="/display?fileName='+fileCallPath+'">')
+				.animate({width : '100%', height : '100%'}, 1000);
+			
+		}
+		
+		function showList(page){
 			replyService.getList(
 				{
 					bno : bnoValue,
@@ -243,12 +313,10 @@
 					
 					if(list ===  null || list.length === 0){
 						replyUL.html('첫 댓글의 주인공이 되세요.');
-						
 						return;
 					}
 					
 					for(var i = 0; i < list.length; i++){
-						
 						str += '<li class="left  clearfix" data-rno="'+list[i].rno+'">';
 						str += '<div>';
 						str += '	<div class="header">';
@@ -259,7 +327,6 @@
 						str += '</div>';
 						str += '</li>';
 					}
-					
 					replyUL.html(str);
 					showReplyPage(replyCnt);
 				}
