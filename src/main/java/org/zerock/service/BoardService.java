@@ -43,7 +43,18 @@ public class BoardService {
     }
 
     public int modify(BoardVO board) {
-        return mapper.update(board);
+    	log.info("modify ..... bno : " + board.getBno()); 
+    	
+    	attachMapper.deleteAll(board.getBno());
+    	int result = mapper.update(board);
+    	
+    	if(board.getAttachList() != null && board.getAttachList().size() != 0) {
+    		board.getAttachList().forEach(attach ->{
+    			attach.setBno(board.getBno());
+    			attachMapper.insert(attach);
+    		});
+    	}
+        return result;
     }
 
     public int remove(Long bno) {

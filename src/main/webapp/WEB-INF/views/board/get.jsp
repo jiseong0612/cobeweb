@@ -59,7 +59,7 @@
     </div>
 </div>
 
-<!-- 댓글
+<!-- 댓글 -->
 <div class='row'>
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -84,7 +84,7 @@
         </div>
     </div>
 </div>
--->
+
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel" aria-hidden="true">
@@ -127,7 +127,6 @@
 </form>
 <script>
     $(document).ready(function() {
-        alert();
         var operForm = $('#operForm');
         var bnoValue = '<c:out value="${board.bno}"/>';
         var replyUL = $('.chat');
@@ -292,7 +291,6 @@
             $('.bigPicture')
                 .html('<img src="/display?fileName='+fileCallPath+'">')
                 .animate({width : '100%', height : '100%'}, 1000);
-
         }
 
         function showList(page){

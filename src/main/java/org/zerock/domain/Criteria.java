@@ -1,11 +1,6 @@
 package org.zerock.domain;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import org.springframework.web.util.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
