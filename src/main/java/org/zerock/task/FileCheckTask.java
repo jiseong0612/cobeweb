@@ -31,6 +31,10 @@ public class FileCheckTask {
 		//어제 업로드된 파일 목록
 		List<BoardAttachVO> fileList = mapper.getOldFiles();
 		
+		if(fileList == null || fileList.size() == 0 ) {
+			return;
+		}
+		
 		//어제 업로드된 파일 경로
 		List<Path> fileListPaths = fileList
 				.stream()
