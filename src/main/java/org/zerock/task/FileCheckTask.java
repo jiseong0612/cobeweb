@@ -23,17 +23,13 @@ public class FileCheckTask {
 	@Autowired
 	private BoardAttachMapper mapper;
 	
-	@Scheduled(cron = "0 * * * * *")
+	@Scheduled(cron = "0 0 2 * * *")
 	public void checkFiles() throws Exception {
 		log.warn("file check task run.................");
 		log.warn(new Date());
 		
 		//어제 업로드된 파일 목록
 		List<BoardAttachVO> fileList = mapper.getOldFiles();
-		
-		if(fileList == null || fileList.size() == 0 ) {
-			return;
-		}
 		
 		//어제 업로드된 파일 경로
 		List<Path> fileListPaths = fileList
@@ -52,6 +48,10 @@ public class FileCheckTask {
 		
 		//삭제할 파일들 = 어제날짜 폴더의 파일 목록들중에 디비에서 조회한 어제날짜 파일들 비교 후, 'contains = false' 인 것을 조회
 		File[] removeFiles = targetDir.listFiles(file -> fileListPaths.contains(file.toPath()) == false);
+		
+		if(removeFiles == null || removeFiles.length == 0 ) {
+			return;
+		}
 		
 		log.warn("파일 삭제 진행...............................");
 		
