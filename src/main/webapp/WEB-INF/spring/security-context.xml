@@ -4,13 +4,26 @@
 	xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="customAccessDenied" class="org.zerock.security.CustomAccessDeniedHandler"></bean>
+	<bean id="customLoginSuccess" class="org.zerock.security.CustomLoginSuccessHandler"></bean>
 
 	<security:http>
-		<security:form-login/>
+		<security:intercept-url pattern="/sample/all" access="permitAll"/>
+		<security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MEMBER')"/>
+		<security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')"/>
+		<security:access-denied-handler ref="customAccessDenied"/> <!-- 위의 빈으로 등록한 클래스를 사용 -->
+		<security:form-login login-page="/customLogin" authentication-success-handler-ref="customLoginSuccess"/>
+		<security:logout logout-url="/customLogout" invalidate-session="true"/>
 	</security:http>
 	
 	<security:authentication-manager>
-		
+		<security:authentication-provider>
+			<security:user-service>
+				<security:user name="member"  password="{noop}member" authorities="ROLE_MEMBER"/>
+				<security:user name="admin"  password="{noop}admin" authorities="ROLE_MEMBER, ROLE_ADMIN"/>
+			</security:user-service>
+		</security:authentication-provider>
 	</security:authentication-manager>
 	
 </beans>
