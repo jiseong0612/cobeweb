@@ -1,31 +1,80 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<script src="/resources/vendor/jquery/jquery.min.js"></script>
+<script src="/resources/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="/resources/vendor/metisMenu/metisMenu.min.js"></script>
+<script src="/resources/dist/js/sb-admin-2.js"></script>
+<link href="/resources/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/resources/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+<link href="/resources/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="/resources/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<title>SB Admin 2 - Bootstrap Admin Theme</title>
+
 </head>
 <body>
-	<h1>customLogin</h1>
-	<h2><c:out value="${error }"/></h2>
-	<h2><c:out value="${logout }"/></h2>
-	
-	<form action="/login" method="post">
-		<div>
-			<input type="text" name="username" value="admin90">
-		</div>	
-		<div>
-			<input type="text" name="password" value="pw90">
-		</div>	
-		<div>
-			<input type="checkbox" name="remember-me">remember-me
-		</div>	
-		<div>
-			<input type="submit">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-4">
+				<div class="login-panel panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Please Sign In</h3>
+					</div>
+					<div class="panel-body">
+						<form role="form" action="/login" method="post">
+							<fieldset>
+								<div class="form-group">
+									<input class="form-control" placeholder="userid" name="userid" type="text" autofocus>
+								</div>
+								<div class="form-group">
+									<input class="form-control" placeholder="Password" name="password" type="password" value="">
+								</div>
+								<div class="checkbox">
+									<label> 
+										<input name="remember" type="checkbox" value="Remember Me">
+											Remember Me 
+										</label>
+								</div>
+								<a href="index.html" class="btn btn-lg btn-success btn-block">Login</a>
+							</fieldset>
+							<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
-		<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
-	</form>
+	</div>
+<script>
+	$(document).ready(function(){
+		$('.btn-success').on('click', function(e){
+			e.preventDefault();
+			
+			if($.trim($('input[name=userid]').val()) === '') return false;
+			if($.trim($('input[name=password]').val()) === '') return false;
+			
+			$('form').submit();
+		});
+		
+		$('input[name=password]').on('keydown', function(e){
+			if(e.keyCode === 13){
+				if($.trim($('input[name=userid]').val()) === '') return false;
+				if($.trim($('input[name=password]').val()) === '') return false;
+				$('form').submit();
+			}			
+		});
+	});
+</script>
 </body>
 </html>
