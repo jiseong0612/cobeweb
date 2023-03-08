@@ -36,14 +36,14 @@
 						<form role="form" action="/login" method="post">
 							<fieldset>
 								<div class="form-group">
-									<input class="form-control" placeholder="userid" name="userid" type="text" autofocus>
+									<input class="form-control" placeholder="username" name="username" type="text" autofocus>
 								</div>
 								<div class="form-group">
 									<input class="form-control" placeholder="Password" name="password" type="password" value="">
 								</div>
 								<div class="checkbox">
 									<label> 
-										<input name="remember" type="checkbox" value="Remember Me">
+										<input name="remember-me" type="checkbox">
 											Remember Me 
 										</label>
 								</div>
@@ -60,8 +60,6 @@
 	$(document).ready(function(){
 		$('.btn-success').on('click', function(e){
 			e.preventDefault();
-			
-			if($.trim($('input[name=userid]').val()) === '') return false;
 			if($.trim($('input[name=password]').val()) === '') return false;
 			
 			$('form').submit();
@@ -69,7 +67,6 @@
 		
 		$('input[name=password]').on('keydown', function(e){
 			if(e.keyCode === 13){
-				if($.trim($('input[name=userid]').val()) === '') return false;
 				if($.trim($('input[name=password]').val()) === '') return false;
 				$('form').submit();
 			}			
