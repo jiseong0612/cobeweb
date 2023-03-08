@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.zerock.domain.BoardAttachVO;
 import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
 import org.zerock.domain.PageDTO;
+import org.zerock.security.domain.CustomUser;
 import org.zerock.service.BoardService;
 
 import lombok.extern.log4j.Log4j;
@@ -69,7 +71,8 @@ public class BoardController {
 
         return "redirect:/board/list";
     }
-
+    
+    @PreAuthorize("principal.username == #board.writer")
     @PostMapping("/modify")
     public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr) {
         if (service.modify(board) == 1) {
@@ -83,8 +86,22 @@ public class BoardController {
         return "redirect:/board/list" + cri.getListLink();
     }
 
+	/* @PreAuthorize("principal.username == #writer") */
     @PostMapping("/remove")
-    public String remove(Long bno, Criteria cri, RedirectAttributes rttr) {
+    public String remove(Long bno, String writer, Criteria cri, RedirectAttributes rttr, Authentication authentication) {
+    	log.info("===================================");
+    	log.info("writer: " + writer);
+    	log.info("===================================");
+    	log.info(authentication);
+    	
+    	CustomUser user = (CustomUser)authentication.getPrincipal();
+
+    	log.info("===================================");
+    	log.info(user.getUsername());
+    	log.info("===================================");
+    	
+
+    	log.info(authentication.getPrincipal());
         log.info("remove : " + bno);
 
         List<BoardAttachVO> attachList = service.getAttachList(bno);
