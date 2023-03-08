@@ -19,6 +19,7 @@
 			<div class="panel-body">
 
 				<form role="form" action="/board/register" method="post">
+					<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">				
 					<div class="form-group">
 						<label>Title</label> 
 						<input class="form-control" name='title'>
