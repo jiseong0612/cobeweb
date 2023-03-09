@@ -110,7 +110,7 @@
                 </div>
                 <div class="form-group">
                     <label>Replyer</label>
-                    <input class="form-control" name='replyer' value='replyer'>
+                    <input class="form-control" name='replyer' value='replyer' readonly>
                 </div>
                 <div class="form-group">
                     <label>Reply Date</label>
@@ -134,6 +134,9 @@
     <input type="hidden" name="keyWord" value="${cri.keyWord }">
 </form>
 <script>
+var csrfHeaderName = "${_csrf.headerName}"; 
+var csrfTokenValue = "${_csrf.token}";
+
     $(document).ready(function() {
         var operForm = $('#operForm');
         var bnoValue = '<c:out value="${board.bno}"/>';
@@ -146,7 +149,14 @@
         var modalModBtn = $('#modalModBtn');
         var modalRemoveBtn = $('#modalRemoveBtn');
         var modalRegisterBtn = $('#modalRegisterBtn');
-
+		
+        var replyer = null;
+        
+        <sec:authorize access="isAuthenticated()">
+        	replyer = '<sec:authentication property="principal.username"/>';   
+    	</sec:authorize>
+        	
+        
         var pageNum = 1;
         var replyPageFooter = $('.panel-footer');
 
@@ -202,7 +212,7 @@
 
         $('#addReplyBtn').on('click', function(){
             modal.find('input').val('');
-            modalInputReplyer.removeAttr('readonly');
+            modal.find('input[name="replyer"]').val(replyer);
             modalInputReplyDate.closest('div').hide();
             modal.find('button[id != "modalCloseBtn"]').hide();
             modalRegisterBtn.show();
@@ -243,8 +253,30 @@
         });
 
         $('#modalRemoveBtn').on('click', function(){
+        	var rno = modal.data('rno');
+        	
+        	console.log('rno : '+ rno);
+        	console.log('replyer : '+  replyer);
+        	
+        	if(!replyer){
+        		alert('로그인 후 삭제가 가능합니다');
+        		modal.modal('hide');
+        		return false;
+        	}
+        	
+        	var originalReplyer = modalInputReplyer.val();
+        	
+        	console.log('Original replyer : ' + originalReplyer);
+        	
+        	if(replyer !== originalReplyer){
+        		alert('자신이 작성한 댓글만 삭제 가능합니다');
+        		modal.modal('hide');
+        		return false;
+        	}
+        	
             replyService.remove(
-                modal.data('rno'),
+                rno,
+                originalReplyer,
                 function(result){
                     alert(result);
                     modal.modal('hide');
@@ -377,5 +409,9 @@
         }
 
     });
+    
+$(document).ajaxSend(function(e, xhr, options) { 
+	xhr.setRequestHeader(csrfHeaderName, csrfTokenValue); 
+});
 </script>
 <%@include file="../includes/footer.jsp"%>

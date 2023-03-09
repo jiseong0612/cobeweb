@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class ReplyController {
 	
 	//등록
 	//@RequestBody 생략시 모델어트리뷰트로 들어가서 그냥 생략하지 말아라... 스트링이던 객체던
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value = "/new", consumes = "application/json", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String>create(@RequestBody ReplyVO reply){
 		 
@@ -58,8 +60,9 @@ public class ReplyController {
 	}
 	
 	//삭제
+	@PreAuthorize("principal.username == #vo.replyer")
 	@DeleteMapping(value = "/{rno}", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> remove(@PathVariable Long rno){
+	public ResponseEntity<String> remove(@PathVariable Long rno, @RequestBody ReplyVO vo){
 		
 		return service.remove(rno) == 1 
 				? new ResponseEntity<String>("success", HttpStatus.OK)
