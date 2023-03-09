@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +53,8 @@ public class UploadController {
     @GetMapping("/uploadAjax")
     public void uploadAjax() {
     }
-
+    
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/uploadAjaxAction")
     @ResponseBody
     public ResponseEntity<List<AttachFileDTO>> uploadAjaxAction(MultipartFile[]uploadFile) {
@@ -144,6 +146,7 @@ public class UploadController {
         return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/deleteFile")
     public ResponseEntity<String> deleteFile (String fileName, String type){
         log.info("deleteFile : " + fileName);

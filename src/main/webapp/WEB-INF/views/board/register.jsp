@@ -146,6 +146,9 @@ $(document).ready(function(){
 		formObj.submit();
 	});
 	
+	var csrfHeaderName = '${_csrf.headerName}';
+	var csrfTokenValue = '${_csrf.token}';
+	
 	$('input[type="file"]').on('change', function(){
 		var formData = new FormData();
 		
@@ -168,6 +171,9 @@ $(document).ready(function(){
 			contentType : false,
 			data : formData,
 			dataType : 'json',
+			beforeSend : function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			success : function(result){
 				//$('.uploadDiv').html(cloneObj.html());
 				$('input[name="uploadFile"]').val('');
@@ -199,6 +205,9 @@ $(document).ready(function(){
 			url : '/deleteFile',
 			data : {fileName : targetFile, type : type},
 			dataType : 'text',
+			beforeSend : function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			success : function(result){
 				alert(result);
 				targetLi.remove();

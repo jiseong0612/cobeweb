@@ -127,6 +127,9 @@ var showUploadResult = function(uploadResultArr){
 var maxSize = 1024 * 1024 * 50;
 var regex = new RegExp("(.*?)\.(sh|zip|alz)$");
 var formObj = $('form'); 
+var csrfHeaderName = '${_csrf.headerName}';
+var csrfTokenValue = '${_csrf.token}';
+
 $(document).ready(function(){
    function showImage(fileCallPath){
         $('.bigPictureWrapper').css('display', 'flex').show();
@@ -208,6 +211,9 @@ $(document).ready(function(){
 			contentType : false,
 			data : formData,
 			dataType : 'json',
+			beforeSend : function(xhr){
+				xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+			},
 			success : function(result){
 				//$('.uploadDiv').html(cloneObj.html());
 				$('input[name="uploadFile"]').val('');
