@@ -239,11 +239,30 @@ var csrfTokenValue = "${_csrf.token}";
         });
 
         $('#modalModBtn').on('click', function(){
+        	var originalReplyer = modalInputReplyer.val();
+        	
+        	var reply = {
+        		rno : modal.data('rno'),
+        		reply : modalInputReply.val(),
+        		replyer : originalReplyer
+        	};
+        	
+        	if(!replyer){
+        		alert('로그인 후 수정이 가능합니다');
+        		modal.modal('hide');
+        		return false;
+        	}
+        	
+        	console.log('originalReplyer : '+ originalReplyer);
+        	
+        	if(replyer !== originalReplyer){
+        		alert('자신이 작성한 댓글만 수정 가능합니다.');
+        		modal.modal('hide');
+        		return false;
+        	}
+        	
             replyService.update(
-                {
-                    rno : modal.data('rno'),
-                    reply : modalInputReply.val()
-                },
+               reply,
                 function(result){
                     alert(result);
                     modal.modal('hide');

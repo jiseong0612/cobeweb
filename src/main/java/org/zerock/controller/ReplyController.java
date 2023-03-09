@@ -50,6 +50,7 @@ public class ReplyController {
 	}
 	
 	//수정
+	@PreAuthorize("principal.username == #reply.replyer")
 	@RequestMapping(value = "/{rno}", method = {RequestMethod.PATCH, RequestMethod.PUT}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String>modify(@PathVariable Long rno, @RequestBody ReplyVO reply){
 		reply.setRno(rno);
